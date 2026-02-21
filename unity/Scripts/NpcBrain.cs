@@ -85,6 +85,17 @@ public class NpcBrain : MonoBehaviour
     [Tooltip("Seconds to wait before auto-starting (gives the scene time to load)")]
     public float autoStartDelay = 1f;
 
+    // ── Loop Mode ─────────────────────────────────────────────────────────
+    [Header("Loop Mode — auto-flip dialogue")]
+    [Tooltip("Keep calling Gemini on a loop so dialogue changes automatically")]
+    public bool loopDialogue = false;
+
+    [Tooltip("Seconds between each new line of dialogue")]
+    public float loopIntervalSeconds = 6f;
+
+    [Tooltip("Prompt sent to Gemini each loop. {prev} is replaced with the last line of dialogue.")]
+    public string loopPrompt = "Continue the scene. Your last line was: \"{prev}\".";
+
     // ── Read-only state ───────────────────────────────────────────────────
     public bool IsBusy => _isBusy;
 
@@ -92,6 +103,8 @@ public class NpcBrain : MonoBehaviour
     private bool       _isBusy;
     private Coroutine  _wanderCoroutine;
     private Coroutine  _hideDialogueCoroutine;
+    private Coroutine  _loopCoroutine;
+    private string     _lastDialogue = "";
 
     // ─────────────────────────────────────────────────────────────────────
     void Awake()
@@ -102,7 +115,9 @@ public class NpcBrain : MonoBehaviour
 
     void Start()
     {
-        if (autoStartOnPlay)
+        if (loopDialogue)
+            _loopCoroutine = StartCoroutine(DialogueLoop());
+        else if (autoStartOnPlay)
             StartCoroutine(AutoStart());
     }
 
@@ -110,6 +125,25 @@ public class NpcBrain : MonoBehaviour
     {
         yield return new WaitForSeconds(autoStartDelay);
         Ask(autoStartMessage);
+    }
+
+    IEnumerator DialogueLoop()
+    {
+        yield return new WaitForSeconds(autoStartDelay);
+
+        while (true)
+        {
+            // First call uses autoStartMessage; subsequent calls include previous dialogue as context.
+            string prompt = string.IsNullOrEmpty(_lastDialogue)
+                ? autoStartMessage
+                : loopPrompt.Replace("{prev}", _lastDialogue);
+
+            Ask(prompt);
+
+            // Wait until the current request finishes, then wait the interval.
+            yield return new WaitUntil(() => !_isBusy);
+            yield return new WaitForSeconds(loopIntervalSeconds);
+        }
     }
 
     void Update()
@@ -195,6 +229,7 @@ public class NpcBrain : MonoBehaviour
     {
         if (!string.IsNullOrEmpty(r.dialogue))
         {
+            _lastDialogue = r.dialogue;
             ShowDialogue(r.dialogue);
             onDialogue?.Invoke(r.dialogue);
         }
