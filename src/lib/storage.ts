@@ -30,6 +30,7 @@ async function blobWriteAll(npcs: NPC[]): Promise<void> {
   await put(BLOB_PATHNAME, JSON.stringify(npcs, null, 2), {
     access: 'private',
     addRandomSuffix: false,
+    allowOverwrite: true,
     contentType: 'application/json',
   });
 }
