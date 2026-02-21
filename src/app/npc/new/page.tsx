@@ -26,7 +26,8 @@ export default function NewNpcPage() {
           formRef.current?.setErrors(body.fields);
           showToast('Please fix the highlighted fields.', 'error');
         } else {
-          showToast(body?.error ?? 'Failed to create NPC.', 'error');
+          const detail = body?.detail ? `: ${body.detail}` : '';
+          showToast((body?.error ?? 'Failed to create NPC.') + detail, 'error');
         }
         return;
       }

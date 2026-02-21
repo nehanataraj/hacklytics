@@ -36,7 +36,9 @@ export async function POST(request: Request) {
     const npc = await createNPC(parsed.data);
     return NextResponse.json(npc, { status: 201 });
   } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    const stack = err instanceof Error ? err.stack : undefined;
     console.error('[POST /api/npcs] Storage error:', err);
-    return NextResponse.json({ error: 'Failed to create NPC' }, { status: 500 });
+    return NextResponse.json({ error: 'Failed to create NPC', detail: msg, stack }, { status: 500 });
   }
 }
