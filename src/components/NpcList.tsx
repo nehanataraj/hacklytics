@@ -57,61 +57,69 @@ function UnitySetupPanel() {
 
       {open && (
         <div className="bg-slate-950 border-t border-slate-800 p-5 space-y-4">
-          {/* Deployed warning */}
-          {typeof window !== 'undefined' && window.location.hostname !== 'localhost' && (
-            <div className="flex items-start gap-2.5 bg-amber-950/50 border border-amber-800/50 rounded-lg px-4 py-3">
-              <svg className="w-4 h-4 text-amber-400 mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-              <div className="text-xs text-amber-300 space-y-1">
-                <p className="font-semibold">You&apos;re on the deployed site — auto-install won&apos;t work here.</p>
-                <p>Download the scripts directly from GitHub instead:</p>
-                <div className="flex flex-col gap-1 mt-1">
-                  <a href="https://raw.githubusercontent.com/RSha70/hackalytics/main/unity/Scripts/NpcBrain.cs" target="_blank" rel="noreferrer"
-                    className="text-blue-400 hover:text-blue-300 underline">
-                    ↓ NpcBrain.cs
-                  </a>
-                  <a href="https://raw.githubusercontent.com/RSha70/hackalytics/main/unity/Scripts/NpcInteractionTrigger.cs" target="_blank" rel="noreferrer"
-                    className="text-blue-400 hover:text-blue-300 underline">
-                    ↓ NpcInteractionTrigger.cs
-                  </a>
-                </div>
-                <p className="mt-1">Right-click each link → <strong>Save Link As</strong> → drop into your Unity <code className="text-yellow-300">Assets/Scripts/</code> folder.</p>
+          {isLocal ? (
+            /* ── Local: path installer ── */
+            <>
+              <p className="text-xs text-slate-400">
+                Paste the path to your Unity project root (the folder that contains <code className="text-blue-300">Assets/</code>).
+                The server will copy both scripts directly into it.
+              </p>
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={path}
+                  onChange={(e) => { setPath(e.target.value); setStatus('idle'); }}
+                  placeholder={`C:\\Users\\you\\Documents\\My Game  or  /Users/you/Documents/My Game`}
+                  className="flex-1 bg-slate-900 border border-slate-800 rounded-lg px-4 py-2.5 text-sm text-slate-100 placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent font-mono"
+                />
+                <button
+                  type="button"
+                  onClick={handleInstall}
+                  disabled={!path.trim() || status === 'loading'}
+                  className="shrink-0 inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 disabled:cursor-not-allowed text-white text-sm font-medium px-5 py-2.5 rounded-lg transition-colors"
+                >
+                  {status === 'loading' ? (
+                    <>
+                      <svg className="animate-spin h-3.5 w-3.5" viewBox="0 0 24 24" fill="none">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
+                      </svg>
+                      Installing…
+                    </>
+                  ) : 'Install Scripts'}
+                </button>
+              </div>
+            </>
+          ) : (
+            /* ── Deployed: direct downloads ── */
+            <div className="space-y-3">
+              <p className="text-xs text-slate-400">
+                Download both scripts and drop them into your Unity project&apos;s <code className="text-yellow-300">Assets/Scripts/</code> folder.
+              </p>
+              <div className="flex flex-col gap-2">
+                <a
+                  href="https://raw.githubusercontent.com/RSha70/hackalytics/main/unity/Scripts/NpcBrain.cs"
+                  target="_blank" rel="noreferrer"
+                  className="inline-flex items-center gap-2 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 text-sm font-medium px-4 py-2.5 rounded-lg transition-colors"
+                >
+                  <svg className="w-4 h-4 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                  </svg>
+                  Download NpcBrain.cs
+                </a>
+                <a
+                  href="https://raw.githubusercontent.com/RSha70/hackalytics/main/unity/Scripts/NpcInteractionTrigger.cs"
+                  target="_blank" rel="noreferrer"
+                  className="inline-flex items-center gap-2 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 text-sm font-medium px-4 py-2.5 rounded-lg transition-colors"
+                >
+                  <svg className="w-4 h-4 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                  </svg>
+                  Download NpcInteractionTrigger.cs
+                </a>
               </div>
             </div>
           )}
-
-          <p className="text-xs text-slate-400">
-            Paste the path to your Unity project root (the folder that contains <code className="text-blue-300">Assets/</code>).
-            Only works when running NPC Studio locally (<code className="text-slate-300">npm run dev</code>).
-          </p>
-
-          {/* Path input */}
-          <div className="flex gap-2">
-            <input
-              type="text"
-              value={path}
-              onChange={(e) => { setPath(e.target.value); setStatus('idle'); }}
-              placeholder={`C:\\Users\\you\\Documents\\My Game  or  /Users/you/Documents/My Game`}
-              className="flex-1 bg-slate-900 border border-slate-800 rounded-lg px-4 py-2.5 text-sm text-slate-100 placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent font-mono"
-            />
-            <button
-              type="button"
-              onClick={handleInstall}
-              disabled={!path.trim() || status === 'loading'}
-              className="shrink-0 inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 disabled:cursor-not-allowed text-white text-sm font-medium px-5 py-2.5 rounded-lg transition-colors"
-            >
-              {status === 'loading' ? (
-                <>
-                  <svg className="animate-spin h-3.5 w-3.5" viewBox="0 0 24 24" fill="none">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
-                  </svg>
-                  Installing…
-                </>
-              ) : 'Install Scripts'}
-            </button>
-          </div>
 
           {/* Result */}
           {status === 'ok' && (
