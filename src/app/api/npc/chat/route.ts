@@ -150,13 +150,28 @@ function makeLangfuse(): Langfuse | null {
 }
 
 // ── Stub fallback (no API key or Gemini error) ─────────────────────────────
-function buildStub(npc: NPC, playerText: string): BrainResponse {
+function buildStub(npc: NPC, _playerText: string): BrainResponse {
   const gestures = npc.capabilities?.allowed_gestures ?? ["none"];
-  const moods = ["neutral", "happy", "focused"] as const;
+  const moods = ["neutral", "happy", "focused", "sad", "excited"] as const;
   const randomGesture = gestures[Math.floor(Math.random() * gestures.length)] ?? "none";
   const randomMood = moods[Math.floor(Math.random() * moods.length)];
+
+  const lines = [
+    `Hmm, let me think about that for a moment...`,
+    `*looks around curiously* This place never gets old.`,
+    `You know, I've been meaning to tell you something interesting.`,
+    `*stretches* What a beautiful day it is!`,
+    `I wonder what adventures await us today.`,
+    `*nods thoughtfully* There's more to this world than meets the eye.`,
+    `Ha! You should have seen what happened earlier.`,
+    `*waves enthusiastically* Oh, it's so good to see a friendly face!`,
+    `I've traveled far and wide, but this spot is special.`,
+    `*crosses arms* Something doesn't feel quite right today...`,
+  ];
+  const line = lines[Math.floor(Math.random() * lines.length)];
+
   return {
-    dialogue: `${npc.name} the ${npc.role} says: "I hear you: ${playerText}."`,
+    dialogue: line,
     mood: randomMood,
     gesture: randomGesture as BrainResponse["gesture"],
     intent: "answer",
