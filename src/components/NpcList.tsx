@@ -57,10 +57,33 @@ function UnitySetupPanel() {
 
       {open && (
         <div className="bg-slate-950 border-t border-slate-800 p-5 space-y-4">
+          {/* Deployed warning */}
+          {typeof window !== 'undefined' && window.location.hostname !== 'localhost' && (
+            <div className="flex items-start gap-2.5 bg-amber-950/50 border border-amber-800/50 rounded-lg px-4 py-3">
+              <svg className="w-4 h-4 text-amber-400 mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <div className="text-xs text-amber-300 space-y-1">
+                <p className="font-semibold">You&apos;re on the deployed site — auto-install won&apos;t work here.</p>
+                <p>Download the scripts directly from GitHub instead:</p>
+                <div className="flex flex-col gap-1 mt-1">
+                  <a href="https://raw.githubusercontent.com/RSha70/hackalytics/main/unity/Scripts/NpcBrain.cs" target="_blank" rel="noreferrer"
+                    className="text-blue-400 hover:text-blue-300 underline">
+                    ↓ NpcBrain.cs
+                  </a>
+                  <a href="https://raw.githubusercontent.com/RSha70/hackalytics/main/unity/Scripts/NpcInteractionTrigger.cs" target="_blank" rel="noreferrer"
+                    className="text-blue-400 hover:text-blue-300 underline">
+                    ↓ NpcInteractionTrigger.cs
+                  </a>
+                </div>
+                <p className="mt-1">Right-click each link → <strong>Save Link As</strong> → drop into your Unity <code className="text-yellow-300">Assets/Scripts/</code> folder.</p>
+              </div>
+            </div>
+          )}
+
           <p className="text-xs text-slate-400">
             Paste the path to your Unity project root (the folder that contains <code className="text-blue-300">Assets/</code>).
-            The server will copy <code className="text-yellow-300">NpcBrain.cs</code> and{' '}
-            <code className="text-yellow-300">NpcInteractionTrigger.cs</code> directly into it.
+            Only works when running NPC Studio locally (<code className="text-slate-300">npm run dev</code>).
           </p>
 
           {/* Path input */}
