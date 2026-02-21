@@ -12,16 +12,14 @@ const BLOB_PATHNAME = 'npcs.json';
 // ── Blob helpers (Vercel production) ──────────────────────────────────────
 
 async function blobReadAll(): Promise<NPC[]> {
-  const { list, getDownloadUrl } = await import('@vercel/blob');
-  const { blobs } = await list({ prefix: BLOB_PATHNAME });
-  if (blobs.length === 0) return [];
-  const url = await getDownloadUrl(blobs[0].url);
-  const res = await fetch(url, { cache: 'no-store' });
-  if (!res.ok) return [];
-  const records = (await res.json()) as unknown[];
+  const { get } = await import('@vercel/blob');
+  const result = await get(BLOB_PATHNAME, { access: 'private' });
+  if (!result) return [];
+  const text = await new Response(result.stream).text();
+  const records = JSON.parse(text) as unknown[];
   return records.map((r) => {
-    const result = NPCSchema.safeParse(r);
-    return result.success ? result.data : (r as NPC);
+    const parsed = NPCSchema.safeParse(r);
+    return parsed.success ? parsed.data : (r as NPC);
   });
 }
 
