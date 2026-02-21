@@ -100,6 +100,8 @@ function buildPrompt(
   const lines: string[] = [
     `You are ${npc.name}, a ${npc.role} in a game world.`,
     `Stay fully in character. Return ONLY valid JSON that matches the response schema provided.`,
+    `IMPORTANT: Vary your gestures and mood each response. Do NOT always use "none" for gesture — actively use nod, wave, angry, and other available gestures to bring the character to life. Alternate between different moods naturally.`,
+    `Each line of dialogue must be fresh and unique — never repeat previous lines.`,
     "",
     "## Persona",
     persona.backstory ? `Backstory: ${persona.backstory}` : "",
@@ -150,10 +152,13 @@ function makeLangfuse(): Langfuse | null {
 // ── Stub fallback (no API key or Gemini error) ─────────────────────────────
 function buildStub(npc: NPC, playerText: string): BrainResponse {
   const gestures = npc.capabilities?.allowed_gestures ?? ["none"];
+  const moods = ["neutral", "happy", "focused"] as const;
+  const randomGesture = gestures[Math.floor(Math.random() * gestures.length)] ?? "none";
+  const randomMood = moods[Math.floor(Math.random() * moods.length)];
   return {
     dialogue: `${npc.name} the ${npc.role} says: "I hear you: ${playerText}."`,
-    mood: "neutral",
-    gesture: (gestures[0] ?? "none") as BrainResponse["gesture"],
+    mood: randomMood,
+    gesture: randomGesture as BrainResponse["gesture"],
     intent: "answer",
   };
 }
