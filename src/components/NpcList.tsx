@@ -4,6 +4,127 @@ import { useState, useMemo } from 'react';
 import Link from 'next/link';
 import type { NPC } from '@/lib/schema';
 
+// ── Unity Quick Setup panel ─────────────────────────────────────────────────
+function UnitySetupPanel() {
+  const [open, setOpen]       = useState(false);
+  const [path, setPath]       = useState('');
+  const [status, setStatus]   = useState<'idle' | 'loading' | 'ok' | 'error'>('idle');
+  const [message, setMessage] = useState('');
+
+  async function handleInstall() {
+    if (!path.trim()) return;
+    setStatus('loading');
+    setMessage('');
+    try {
+      const res  = await fetch('/api/unity/install', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ projectPath: path.trim() }),
+      });
+      const body = await res.json();
+      if (!res.ok) {
+        setStatus('error');
+        setMessage(body.error ?? 'Something went wrong.');
+      } else {
+        setStatus('ok');
+        setMessage(body.message);
+      }
+    } catch {
+      setStatus('error');
+      setMessage('Could not reach the server.');
+    }
+  }
+
+  return (
+    <div className="mb-8 border border-slate-800 rounded-xl overflow-hidden">
+      <button
+        type="button"
+        onClick={() => setOpen((o) => !o)}
+        className="w-full flex items-center justify-between px-5 py-4 bg-slate-900 hover:bg-slate-800/70 transition-colors text-left"
+      >
+        <div className="flex items-center gap-2.5">
+          <span className="text-blue-400 text-base">🎮</span>
+          <span className="text-sm font-semibold text-slate-300">Unity Quick Setup</span>
+          <span className="text-xs text-slate-500 font-normal">— install scripts into any Unity project</span>
+        </div>
+        <svg
+          className={`w-4 h-4 text-slate-500 transition-transform duration-150 ${open ? 'rotate-180' : ''}`}
+          fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+        </svg>
+      </button>
+
+      {open && (
+        <div className="bg-slate-950 border-t border-slate-800 p-5 space-y-4">
+          <p className="text-xs text-slate-400">
+            Paste the path to your Unity project root (the folder that contains <code className="text-blue-300">Assets/</code>).
+            The server will copy <code className="text-yellow-300">NpcBrain.cs</code> and{' '}
+            <code className="text-yellow-300">NpcInteractionTrigger.cs</code> directly into it.
+          </p>
+
+          {/* Path input */}
+          <div className="flex gap-2">
+            <input
+              type="text"
+              value={path}
+              onChange={(e) => { setPath(e.target.value); setStatus('idle'); }}
+              placeholder={`C:\\Users\\you\\Documents\\My Game  or  /Users/you/Documents/My Game`}
+              className="flex-1 bg-slate-900 border border-slate-800 rounded-lg px-4 py-2.5 text-sm text-slate-100 placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent font-mono"
+            />
+            <button
+              type="button"
+              onClick={handleInstall}
+              disabled={!path.trim() || status === 'loading'}
+              className="shrink-0 inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 disabled:cursor-not-allowed text-white text-sm font-medium px-5 py-2.5 rounded-lg transition-colors"
+            >
+              {status === 'loading' ? (
+                <>
+                  <svg className="animate-spin h-3.5 w-3.5" viewBox="0 0 24 24" fill="none">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
+                  </svg>
+                  Installing…
+                </>
+              ) : 'Install Scripts'}
+            </button>
+          </div>
+
+          {/* Result */}
+          {status === 'ok' && (
+            <div className="flex items-start gap-2.5 bg-emerald-950/50 border border-emerald-800/50 rounded-lg px-4 py-3">
+              <svg className="w-4 h-4 text-emerald-400 mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+              </svg>
+              <p className="text-sm text-emerald-300">{message}</p>
+            </div>
+          )}
+          {status === 'error' && (
+            <div className="flex items-start gap-2.5 bg-red-950/50 border border-red-800/50 rounded-lg px-4 py-3">
+              <svg className="w-4 h-4 text-red-400 mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <p className="text-sm text-red-300">{message}</p>
+            </div>
+          )}
+
+          {/* What happens next */}
+          {status === 'ok' && (
+            <div className="bg-slate-900 border border-slate-800 rounded-lg p-4 space-y-1.5 text-xs text-slate-400">
+              <p className="font-semibold text-slate-300 mb-2">Next steps in Unity:</p>
+              <p>1. Switch to Unity — scripts will reimport automatically.</p>
+              <p>2. Select your character → <strong className="text-slate-200">Add Component → NpcBrain</strong>.</p>
+              <p>3. Open any NPC below → <strong className="text-slate-200">🎮 Unity Integration</strong> → copy its ID.</p>
+              <p>4. Paste the ID into <code className="text-yellow-300">npcId</code> and set <code className="text-blue-300">serverUrl</code> to <code className="text-blue-300">http://localhost:3000</code>.</p>
+              <p>5. Check <strong className="text-slate-200">Loop Dialogue</strong> and press Play ▶</p>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
 function formatDate(iso: string): string {
   return new Date(iso).toLocaleDateString('en-US', {
     month: 'short',
@@ -100,6 +221,8 @@ export default function NpcList({ npcs }: { npcs: NPC[] }) {
 
   return (
     <>
+      <UnitySetupPanel />
+
       {/* Header row */}
       <div className="flex items-center justify-between gap-4 mb-6">
         <div>
