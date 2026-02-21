@@ -57,6 +57,9 @@ public class NpcBrain : MonoBehaviour
     [Header("Movement (optional — auto-found on this GameObject if empty)")]
     public NavMeshAgent navMeshAgent;
 
+    [Tooltip("Start wandering immediately when the scene starts — no Gemini needed")]
+    public bool alwaysWander = false;
+
     [Tooltip("Wander radius to use when the brain response doesn't specify one")]
     public float defaultWanderRadius = 5f;
 
@@ -115,6 +118,9 @@ public class NpcBrain : MonoBehaviour
 
     void Start()
     {
+        if (alwaysWander)
+            _wanderCoroutine = StartCoroutine(WanderRoutine(defaultWanderRadius, float.MaxValue));
+
         if (loopDialogue)
             _loopCoroutine = StartCoroutine(DialogueLoop());
         else if (autoStartOnPlay)
@@ -332,7 +338,9 @@ public class NpcBrain : MonoBehaviour
     IEnumerator WanderRoutine(float radius, float totalSeconds)
     {
         float elapsed = 0f;
-        while (elapsed < totalSeconds)
+        bool forever = float.IsPositiveInfinity(totalSeconds) || totalSeconds >= float.MaxValue - 1f;
+
+        while (forever || elapsed < totalSeconds)
         {
             if (TryRandomNavPoint(transform.position, radius, out Vector3 dest))
                 navMeshAgent.SetDestination(dest);
@@ -347,7 +355,7 @@ public class NpcBrain : MonoBehaviour
 
             float pause = UnityEngine.Random.Range(0.5f, 2f);
             yield return new WaitForSeconds(pause);
-            elapsed += pause + 1f;
+            if (!forever) elapsed += pause + 1f;
         }
         if (navMeshAgent != null && navMeshAgent.isActiveAndEnabled) navMeshAgent.ResetPath();
         _wanderCoroutine = null;
