@@ -29,5 +29,41 @@
     "lore_facts": [],
     "createdAt": "2026-02-21T03:31:27.255Z",
     "updatedAt": "2026-02-21T03:52:06.866Z"
+  },
+  {
+    "id": "ea1be106-6f56-4077-bf54-bdcf015e1547",
+    "name": "Aldric Vane",
+    "role": "Pirate",
+    "persona": {
+      "backstory": "He's a pirate and says arr a lot.",
+      "goals": "treasure",
+      "voice_style": "cheerful"
+    },
+    "rules": {
+      "do_not": [],
+      "spoiler_policy": ""
+    },
+    "capabilities": {
+      "allowed_gestures": [
+        "none",
+        "nod",
+        "wave",
+        "point",
+        "shrug",
+        "angry"
+      ],
+      "allowed_actions": [
+        "none",
+        "set_flag",
+        "give_item",
+        "start_quest",
+        "equip",
+        "pickup",
+        "go_to"
+      ]
+    },
+    "lore_facts": [],
+    "createdAt": "2026-02-21T06:00:38.718Z",
+    "updatedAt": "2026-02-21T06:08:10.955Z"
   }
 ]
