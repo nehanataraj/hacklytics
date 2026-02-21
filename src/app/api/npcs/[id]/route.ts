@@ -17,7 +17,7 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> },
 ) {
   const { id } = await params;
-  const npc = getNPC(id);
+  const npc = await getNPC(id);
   if (!npc) return NextResponse.json({ error: 'Not found' }, { status: 404 });
   return NextResponse.json(npc);
 }

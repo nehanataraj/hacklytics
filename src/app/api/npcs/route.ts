@@ -14,7 +14,7 @@ function flattenZodError(err: ZodError): Record<string, string> {
 }
 
 export async function GET() {
-  const npcs = listNPCs();
+  const npcs = await listNPCs();
   return NextResponse.json(npcs);
 }
 

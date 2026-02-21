@@ -8,7 +8,7 @@ export default async function NpcPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const npc = getNPC(id);
+  const npc = await getNPC(id);
   if (!npc) notFound();
   return <NpcEditor npc={npc} />;
 }

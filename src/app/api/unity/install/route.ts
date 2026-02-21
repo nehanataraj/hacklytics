@@ -2,9 +2,20 @@ import { NextResponse } from 'next/server';
 import fs from 'fs';
 import path from 'path';
 
+// This endpoint copies files on the local filesystem — it only works when
+// running the dev server locally, not on Vercel.
+const IS_VERCEL = !!process.env.VERCEL;
+
 const SCRIPTS = ['NpcBrain.cs', 'NpcInteractionTrigger.cs'];
 
 export async function POST(req: Request) {
+  if (IS_VERCEL) {
+    return NextResponse.json(
+      { error: 'Unity Quick Setup only works when running NPC Studio locally (npm run dev). Download NpcBrain.cs and NpcInteractionTrigger.cs from the GitHub repo instead.' },
+      { status: 400 },
+    );
+  }
+
   let projectPath: string;
   try {
     const body = await req.json();

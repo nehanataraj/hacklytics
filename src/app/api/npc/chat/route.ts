@@ -4,6 +4,7 @@ import { zodToJsonSchema } from "zod-to-json-schema";
 import { GoogleGenAI } from "@google/genai";
 import Langfuse from "langfuse";
 import { getNPC } from "@/lib/storage";
+import type { NPC } from "@/lib/schema";
 
 // ── CORS helpers ────────────────────────────────────────────────────────────
 const CORS_HEADERS = {
@@ -84,7 +85,7 @@ function toGeminiSchema(schema: z.ZodTypeAny): object {
 
 // ── Prompt builder ─────────────────────────────────────────────────────────
 function buildPrompt(
-  npc: NonNullable<ReturnType<typeof getNPC>>,
+  npc: NPC,
   playerText: string,
   world?: ChatReq["world"],
 ): string {
@@ -147,7 +148,7 @@ function makeLangfuse(): Langfuse | null {
 }
 
 // ── Stub fallback (no API key or Gemini error) ─────────────────────────────
-function buildStub(npc: NonNullable<ReturnType<typeof getNPC>>, playerText: string): BrainResponse {
+function buildStub(npc: NPC, playerText: string): BrainResponse {
   const gestures = npc.capabilities?.allowed_gestures ?? ["none"];
   return {
     dialogue: `${npc.name} the ${npc.role} says: "I hear you: ${playerText}."`,
@@ -171,7 +172,7 @@ export async function POST(req: Request) {
   const { npcId, playerText, world } = parsed.data;
 
   // 2. Load NPC from file storage
-  const npc = getNPC(npcId);
+  const npc = await getNPC(npcId);
   if (!npc) {
     return NextResponse.json({ error: "NPC not found" }, { status: 404, headers: CORS_HEADERS });
   }
