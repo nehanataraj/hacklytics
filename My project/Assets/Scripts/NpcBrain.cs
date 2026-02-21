@@ -74,6 +74,17 @@ public class NpcBrain : MonoBehaviour
     [Tooltip("Fired when the HTTP request completes (true = success, false = error)")]
     public UnityEvent<bool> onResponseComplete;
 
+    // ── Auto-start ────────────────────────────────────────────────────────
+    [Header("Auto-start (no player needed)")]
+    [Tooltip("Fire Ask() automatically when the scene starts")]
+    public bool autoStartOnPlay = false;
+
+    [Tooltip("Message sent to the brain on auto-start")]
+    public string autoStartMessage = "Hello!";
+
+    [Tooltip("Seconds to wait before auto-starting (gives the scene time to load)")]
+    public float autoStartDelay = 1f;
+
     // ── Read-only state ───────────────────────────────────────────────────
     public bool IsBusy => _isBusy;
 
@@ -87,6 +98,18 @@ public class NpcBrain : MonoBehaviour
     {
         if (animator     == null) animator     = GetComponent<Animator>();
         if (navMeshAgent == null) navMeshAgent = GetComponent<NavMeshAgent>();
+    }
+
+    void Start()
+    {
+        if (autoStartOnPlay)
+            StartCoroutine(AutoStart());
+    }
+
+    IEnumerator AutoStart()
+    {
+        yield return new WaitForSeconds(autoStartDelay);
+        Ask(autoStartMessage);
     }
 
     void Update()
