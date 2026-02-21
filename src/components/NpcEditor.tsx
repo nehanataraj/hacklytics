@@ -79,6 +79,138 @@ function BrainOutputPreview({ npc }: { npc: NPC }) {
   );
 }
 
+// ── Unity Integration Panel ────────────────────────────────────────────────
+function UnityIntegrationPanel({ npc }: { npc: NPC }) {
+  const [open, setOpen] = useState(false);
+  const [copied, setCopied] = useState(false);
+  const [copiedUrl, setCopiedUrl] = useState(false);
+
+  const chatEndpoint =
+    typeof window !== 'undefined'
+      ? `${window.location.origin}/api/npc/chat`
+      : '/api/npc/chat';
+
+  function copyId() {
+    navigator.clipboard.writeText(npc.id).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
+  }
+
+  function copyEndpoint() {
+    navigator.clipboard.writeText(chatEndpoint).then(() => {
+      setCopiedUrl(true);
+      setTimeout(() => setCopiedUrl(false), 2000);
+    });
+  }
+
+  return (
+    <div className="mt-4 border border-slate-800 rounded-xl overflow-hidden">
+      <button
+        type="button"
+        onClick={() => setOpen((o) => !o)}
+        className="w-full flex items-center justify-between px-5 py-4 bg-slate-900 hover:bg-slate-800/70 transition-colors text-left"
+      >
+        <div className="flex items-center gap-2.5">
+          <span className="text-blue-400 text-base">🎮</span>
+          <span className="text-sm font-semibold text-slate-300">Unity Integration</span>
+          <span className="text-xs text-slate-500 font-normal">
+            — connect this NPC to any Unity character
+          </span>
+        </div>
+        <svg
+          className={`w-4 h-4 text-slate-500 transition-transform duration-150 ${open ? 'rotate-180' : ''}`}
+          fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+        </svg>
+      </button>
+
+      {open && (
+        <div className="bg-slate-950 border-t border-slate-800 p-5 space-y-5">
+          {/* NPC ID */}
+          <div>
+            <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">
+              NPC ID — paste into the <code className="text-blue-400">npcId</code> field in Unity
+            </p>
+            <div className="flex items-center gap-2">
+              <code className="flex-1 bg-slate-900 border border-slate-800 rounded-lg px-4 py-2.5 text-sm text-yellow-300 font-mono truncate">
+                {npc.id}
+              </code>
+              <button
+                type="button"
+                onClick={copyId}
+                className="shrink-0 inline-flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 text-xs font-medium px-3 py-2.5 rounded-lg transition-colors"
+              >
+                {copied ? (
+                  <>
+                    <svg className="w-3.5 h-3.5 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                    </svg>
+                    Copied!
+                  </>
+                ) : (
+                  <>
+                    <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                    </svg>
+                    Copy ID
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+
+          {/* Chat Endpoint */}
+          <div>
+            <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">
+              Chat Endpoint — paste into the <code className="text-blue-400">serverUrl</code> field in Unity
+            </p>
+            <div className="flex items-center gap-2">
+              <code className="flex-1 bg-slate-900 border border-slate-800 rounded-lg px-4 py-2.5 text-sm text-blue-300 font-mono truncate">
+                {chatEndpoint}
+              </code>
+              <button
+                type="button"
+                onClick={copyEndpoint}
+                className="shrink-0 inline-flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 text-xs font-medium px-3 py-2.5 rounded-lg transition-colors"
+              >
+                {copiedUrl ? (
+                  <>
+                    <svg className="w-3.5 h-3.5 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                    </svg>
+                    Copied!
+                  </>
+                ) : (
+                  <>
+                    <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v8a2 2 0 002-2V6a2 2 0 00-2-2h-8a2 2 0 00-2 2v2" />
+                    </svg>
+                    Copy URL
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+
+          {/* Quick instructions */}
+          <div className="bg-slate-900 border border-slate-800 rounded-lg p-4 space-y-2">
+            <p className="text-xs font-semibold text-slate-300 mb-3">Quick setup in Unity:</p>
+            <ol className="list-decimal list-inside space-y-1.5 text-xs text-slate-400">
+              <li>Copy <code className="text-yellow-300">NpcBrain.cs</code> and <code className="text-yellow-300">NpcInteractionTrigger.cs</code> from the <code className="text-blue-300">unity/Scripts/</code> folder in this repo.</li>
+              <li>Add <strong className="text-slate-200">NpcBrain</strong> to your character GameObject.</li>
+              <li>Paste the <strong className="text-yellow-300">NPC ID</strong> above into the <code className="text-blue-300">npcId</code> field.</li>
+              <li>Paste the <strong className="text-blue-300">Chat Endpoint</strong> into the <code className="text-blue-300">serverUrl</code> field.</li>
+              <li>Optionally add <strong className="text-slate-200">NpcInteractionTrigger</strong> to let the player press E to talk.</li>
+            </ol>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ── Main editor ────────────────────────────────────────────────────────────
 export default function NpcEditor({ npc: initialNpc }: { npc: NPC }) {
   const router = useRouter();
@@ -239,6 +371,8 @@ export default function NpcEditor({ npc: initialNpc }: { npc: NPC }) {
       />
 
       <BrainOutputPreview npc={npc} />
+
+      <UnityIntegrationPanel npc={npc} />
 
       <Toast toast={toast} onDismiss={dismiss} />
     </>
