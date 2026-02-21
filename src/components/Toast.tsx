@@ -30,9 +30,9 @@ const ICONS: Record<ToastKind, React.ReactNode> = {
 };
 
 const STYLES: Record<ToastKind, string> = {
-  success: 'bg-emerald-900/95 border-emerald-700 text-emerald-100',
-  error: 'bg-red-900/95 border-red-700 text-red-100',
-  info: 'bg-slate-800/95 border-slate-600 text-slate-100',
+  success: 'bg-gray-900 border-gray-600 text-white',
+  error: 'bg-gray-900 border-gray-600 text-white',
+  info: 'bg-gray-900 border-gray-600 text-white',
 };
 
 export function Toast({
@@ -48,7 +48,7 @@ export function Toast({
       key={toast.id}
       role="status"
       aria-live="polite"
-      className={`fixed bottom-6 right-6 z-50 flex items-start gap-2.5 px-4 py-3 rounded-lg shadow-2xl border text-sm font-medium max-w-sm ${STYLES[toast.kind]}`}
+      className={`fixed bottom-6 right-6 z-50 flex items-start gap-2.5 px-4 py-3 shadow-2xl border text-sm font-medium max-w-sm backdrop-blur-sm ${STYLES[toast.kind]}`}
     >
       {ICONS[toast.kind]}
       <span className="flex-1 leading-snug">{toast.message}</span>

@@ -76,9 +76,9 @@ function zodToFieldErrors(formData: NpcFormData): FieldErrors | null {
 }
 
 const inputCls =
-  'w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2.5 text-slate-100 placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-colors resize-none';
+  'w-full bg-black border border-gray-700 px-3 py-2.5 text-white placeholder-gray-500 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:border-transparent transition-colors resize-none';
 
-const errorCls = 'text-red-400 text-xs mt-1.5 flex items-center gap-1';
+const errorCls = 'text-gray-400 text-xs mt-1.5 flex items-center gap-1';
 
 // ── Sub-components ─────────────────────────────────────────────────────────
 function FieldError({ msg }: { msg?: string }) {
@@ -103,24 +103,24 @@ function Field({
 }) {
   return (
     <div>
-      <label htmlFor={id} className="block text-sm font-medium text-slate-300 mb-1.5">
+      <label htmlFor={id} className="block text-sm font-medium text-gray-300 mb-1.5">
         {label}
-        {required && <span className="text-indigo-400 ml-1">*</span>}
-        {hint && <span className="ml-2 text-slate-500 font-normal text-xs">{hint}</span>}
+        {required && <span className="text-white ml-1">*</span>}
+        {hint && <span className="ml-2 text-gray-500 font-normal text-xs">{hint}</span>}
       </label>
       {multiline ? (
         <textarea
           id={id} rows={rows ?? 4} value={value}
           onChange={(e) => onChange(e.target.value)}
           placeholder={placeholder}
-          className={`${inputCls} ${error ? 'border-red-600 focus:ring-red-500' : ''}`}
+          className={`${inputCls} ${error ? 'border-gray-500 focus:ring-gray-500' : ''}`}
         />
       ) : (
         <input
           id={id} type="text" value={value}
           onChange={(e) => onChange(e.target.value)}
           placeholder={placeholder} required={required}
-          className={`${inputCls} ${error ? 'border-red-600 focus:ring-red-500' : ''}`}
+          className={`${inputCls} ${error ? 'border-gray-500 focus:ring-gray-500' : ''}`}
         />
       )}
       <FieldError msg={error} />
@@ -146,16 +146,16 @@ function ListEditor({
 
   return (
     <div>
-      <p className="text-sm font-medium text-slate-300 mb-1.5">
+      <p className="text-sm font-medium text-gray-300 mb-1.5">
         {label}
-        {hint && <span className="ml-2 text-slate-500 font-normal text-xs">{hint}</span>}
+        {hint && <span className="ml-2 text-gray-500 font-normal text-xs">{hint}</span>}
       </p>
       <div className="space-y-2">
         {items.map((item, i) => (
-          <div key={i} className="flex items-center gap-2 bg-slate-800/60 border border-slate-700 rounded-lg px-3 py-2">
-            <span className="text-sm text-slate-200 flex-1 break-all">{item}</span>
+          <div key={i} className="flex items-center gap-2 bg-black border border-gray-700 px-3 py-2">
+            <span className="text-sm text-white flex-1 break-all">{item}</span>
             <button type="button" onClick={() => onChange(items.filter((_, idx) => idx !== i))}
-              className="shrink-0 text-slate-500 hover:text-red-400 transition-colors" aria-label="Remove">
+              className="shrink-0 text-gray-500 hover:text-gray-400 transition-colors" aria-label="Remove">
               ✕
             </button>
           </div>
@@ -166,10 +166,10 @@ function ListEditor({
             onChange={(e) => setDraft(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), add())}
             placeholder={placeholder ?? 'Type and press Enter or Add…'}
-            className="flex-1 bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-slate-100 placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-colors"
+            className="flex-1 bg-black border border-gray-700 px-3 py-2 text-white placeholder-gray-500 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:border-transparent transition-colors"
           />
           <button type="button" onClick={add}
-            className="px-3 py-2 bg-slate-700 hover:bg-slate-600 text-slate-200 text-sm rounded-lg transition-colors shrink-0">
+            className="px-3 py-2 bg-gray-800 hover:bg-gray-700 text-white text-sm rounded-lg transition-colors shrink-0">
             Add
           </button>
         </div>
@@ -190,9 +190,9 @@ function CheckboxGroup<T extends string>({
   }
   return (
     <div>
-      <p className="text-sm font-medium text-slate-300 mb-2">
+      <p className="text-sm font-medium text-gray-300 mb-2">
         {label}
-        {hint && <span className="ml-2 text-slate-500 font-normal text-xs">{hint}</span>}
+        {hint && <span className="ml-2 text-gray-500 font-normal text-xs">{hint}</span>}
       </p>
       <div className="flex flex-wrap gap-2">
         {options.map((opt) => {
@@ -201,8 +201,8 @@ function CheckboxGroup<T extends string>({
             <button key={opt} type="button" onClick={() => toggle(opt)}
               className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-all ${
                 active
-                  ? 'bg-indigo-600 border-indigo-500 text-white'
-                  : 'bg-slate-800 border-slate-700 text-slate-400 hover:border-slate-500 hover:text-slate-200'
+                  ? 'bg-white border-gray-600 text-black'
+                  : 'bg-black border-gray-700 text-gray-400 hover:border-gray-600 hover:text-white'
               }`}>
               {opt.replace(/_/g, ' ')}
             </button>
@@ -216,8 +216,8 @@ function CheckboxGroup<T extends string>({
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <section className="bg-slate-900 border border-slate-800 rounded-xl p-6 space-y-5">
-      <h2 className="text-xs font-semibold text-slate-400 uppercase tracking-wider">{title}</h2>
+    <section className="bg-black border border-gray-800 p-6 space-y-5 shadow-sm">
+      <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-wider">{title}</h2>
       {children}
     </section>
   );
@@ -340,7 +340,7 @@ const NpcForm = forwardRef<NpcFormHandle, Props>(function NpcForm(
       {/* Action bar */}
       <div className="flex flex-wrap items-center gap-3 pt-1">
         <button type="submit" disabled={isSaving || isDeleting}
-          className="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed text-white text-sm font-medium px-5 py-2.5 rounded-lg transition-colors">
+          className="inline-flex items-center gap-2 bg-white hover:bg-gray-200 text-black disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium px-5 py-2.5 transition-colors">
           {isSaving ? (
             <>
               <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">
@@ -354,7 +354,7 @@ const NpcForm = forwardRef<NpcFormHandle, Props>(function NpcForm(
 
         {isEditing && onExport && (
           <button type="button" onClick={onExport} disabled={isDeleting}
-            className="inline-flex items-center gap-2 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 text-sm font-medium px-4 py-2.5 rounded-lg transition-colors disabled:opacity-50">
+            className="inline-flex items-center gap-2 bg-black hover:bg-gray-900 border border-gray-700 text-white text-sm font-medium px-4 py-2.5 rounded-lg transition-colors disabled:opacity-50">
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
             </svg>
@@ -366,19 +366,19 @@ const NpcForm = forwardRef<NpcFormHandle, Props>(function NpcForm(
           <div className="ml-auto flex items-center gap-2">
             {confirmDelete ? (
               <>
-                <span className="text-sm text-slate-400">Are you sure?</span>
+                <span className="text-sm text-gray-400">Are you sure?</span>
                 <button type="button" onClick={onDelete} disabled={isDeleting}
-                  className="inline-flex items-center gap-1.5 bg-red-600 hover:bg-red-500 disabled:opacity-50 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors">
+                  className="inline-flex items-center gap-1.5 bg-white hover:bg-gray-200 text-black disabled:opacity-50 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors">
                   {isDeleting ? 'Deleting…' : 'Yes, Delete'}
                 </button>
                 <button type="button" onClick={() => setConfirmDelete(false)}
-                  className="text-sm text-slate-400 hover:text-slate-200 px-3 py-2 rounded-lg transition-colors">
+                  className="text-sm text-gray-400 hover:text-white px-3 py-2 rounded-lg transition-colors">
                   Cancel
                 </button>
               </>
             ) : (
               <button type="button" onClick={() => setConfirmDelete(true)} disabled={isDeleting}
-                className="inline-flex items-center gap-1.5 text-red-400 hover:text-red-300 hover:bg-red-950/40 text-sm font-medium px-4 py-2 rounded-lg transition-colors border border-red-900/50">
+                className="inline-flex items-center gap-1.5 text-white hover:text-gray-200 hover:bg-gray-900 text-sm font-medium px-4 py-2 rounded-lg transition-colors border border-gray-700">
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                 </svg>
