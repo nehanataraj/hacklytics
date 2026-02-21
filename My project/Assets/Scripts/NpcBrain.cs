@@ -94,7 +94,7 @@ public class NpcBrain : MonoBehaviour
     public bool loopDialogue = false;
 
     [Tooltip("Seconds between each new line of dialogue")]
-    public float loopIntervalSeconds = 6f;
+    public float loopIntervalSeconds = 2f;
 
     [Tooltip("Prompt sent to Gemini each loop. {prev} is replaced with the last line of dialogue.")]
     public string loopPrompt = "Continue the scene. Your last line was: \"{prev}\".";
