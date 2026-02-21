@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import Link from 'next/link';
 import type { NPC } from '@/lib/schema';
 
@@ -10,6 +10,8 @@ function UnitySetupPanel() {
   const [path, setPath]       = useState('');
   const [status, setStatus]   = useState<'idle' | 'loading' | 'ok' | 'error'>('idle');
   const [message, setMessage] = useState('');
+  const [isLocal, setIsLocal] = useState(false);
+  useEffect(() => { setIsLocal(window.location.hostname === 'localhost'); }, []);
 
   async function handleInstall() {
     if (!path.trim()) return;
