@@ -1,0 +1,9 @@
+You are building Part 1: a localhost NPC Studio web app (Next.js App Router).
+Keep it simple: file-based storage in data/npcs.json (no database yet).
+Use TypeScript, Zod validation, and minimal dependencies.
+UI: Tailwind only (no component libraries unless asked).
+Create pages: / (list), /npc/new, /npc/[id].
+Create API routes: /api/npcs (GET/POST), /api/npcs/[id] (GET/PUT/DELETE).
+Do not add auth. Do not add deployment.
+All secrets must come from process.env; never hardcode keys.
+Prefer readable code over abstraction; avoid over-engineering.
