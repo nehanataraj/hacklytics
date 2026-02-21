@@ -14,19 +14,29 @@ function flattenZodError(err: ZodError): Record<string, string> {
 }
 
 export async function GET() {
-  const npcs = await listNPCs();
-  return NextResponse.json(npcs);
+  try {
+    const npcs = await listNPCs();
+    return NextResponse.json(npcs);
+  } catch (err) {
+    console.error('[GET /api/npcs] Storage error:', err);
+    return NextResponse.json({ error: 'Failed to load NPCs' }, { status: 500 });
+  }
 }
 
 export async function POST(request: Request) {
-  const body = await request.json();
-  const parsed = NPCCreateSchema.safeParse(body);
-  if (!parsed.success) {
-    return NextResponse.json(
-      { error: 'Validation failed', fields: flattenZodError(parsed.error) },
-      { status: 400 },
-    );
+  try {
+    const body = await request.json();
+    const parsed = NPCCreateSchema.safeParse(body);
+    if (!parsed.success) {
+      return NextResponse.json(
+        { error: 'Validation failed', fields: flattenZodError(parsed.error) },
+        { status: 400 },
+      );
+    }
+    const npc = await createNPC(parsed.data);
+    return NextResponse.json(npc, { status: 201 });
+  } catch (err) {
+    console.error('[POST /api/npcs] Storage error:', err);
+    return NextResponse.json({ error: 'Failed to create NPC' }, { status: 500 });
   }
-  const npc = await createNPC(parsed.data);
-  return NextResponse.json(npc, { status: 201 });
 }
