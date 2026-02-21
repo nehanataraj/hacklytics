@@ -5,6 +5,10 @@ node_modules/
 next-env.d.ts
 tsconfig.tsbuildinfo
 
+# Unity game project — not part of the web deployment
+"My project/"
+My project/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]
@@ -143,6 +147,8 @@ celerybeat.pid
 
 # Environments
 .env
+.env.local
+.env.*.local
 .envrc
 .venv
 env/
@@ -212,3 +218,4 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+.vercel
