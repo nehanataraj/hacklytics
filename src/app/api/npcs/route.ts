@@ -18,8 +18,9 @@ export async function GET() {
     const npcs = await listNPCs();
     return NextResponse.json(npcs);
   } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
     console.error('[GET /api/npcs] Storage error:', err);
-    return NextResponse.json({ error: 'Failed to load NPCs' }, { status: 500 });
+    return NextResponse.json({ error: 'Failed to load NPCs', detail: msg }, { status: 500 });
   }
 }
 

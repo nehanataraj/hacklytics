@@ -12,10 +12,11 @@ const BLOB_PATHNAME = 'npcs.json';
 // ── Blob helpers (Vercel production) ──────────────────────────────────────
 
 async function blobReadAll(): Promise<NPC[]> {
-  const { list } = await import('@vercel/blob');
+  const { list, getDownloadUrl } = await import('@vercel/blob');
   const { blobs } = await list({ prefix: BLOB_PATHNAME });
   if (blobs.length === 0) return [];
-  const res = await fetch(blobs[0].downloadUrl, { cache: 'no-store' });
+  const url = await getDownloadUrl(blobs[0].url);
+  const res = await fetch(url, { cache: 'no-store' });
   if (!res.ok) return [];
   const records = (await res.json()) as unknown[];
   return records.map((r) => {
