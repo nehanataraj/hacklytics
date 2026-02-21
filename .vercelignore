@@ -1,0 +1,2 @@
+# Exclude Unity game project from Vercel deployment
+hacklytics game/

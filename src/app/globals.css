@@ -11,3 +11,9 @@
     -moz-osx-font-smoothing: grayscale;
   }
 }
+
+/* Override Next.js portal positioning (persisted from browser preview) */
+nextjs-portal {
+  left: unset;
+  top: unset;
+}
