@@ -237,7 +237,7 @@ export async function POST(req: Request) {
     const stub = buildStub(npc, playerText);
     trace?.update({ output: stub, metadata: { stubbed: true } });
     await lf?.flushAsync();
-    return NextResponse.json(stub, { headers: CORS_HEADERS });
+    return NextResponse.json({ ...stub, npcName: npc.name }, { headers: CORS_HEADERS });
   }
 
   // 6. Call Gemini with structured output
@@ -286,7 +286,7 @@ export async function POST(req: Request) {
       const stub = buildStub(npc, playerText);
       trace?.update({ output: stub, metadata: { stubbed: true, reason: "quota_exhausted" } });
       await lf?.flushAsync();
-      return NextResponse.json(stub, { headers: CORS_HEADERS });
+      return NextResponse.json({ ...stub, npcName: npc.name }, { headers: CORS_HEADERS });
     }
 
     const latencyMs = Date.now() - t0;
@@ -303,7 +303,7 @@ export async function POST(req: Request) {
     trace?.update({ output: validated });
     await lf?.flushAsync();
 
-    return NextResponse.json(validated, { headers: CORS_HEADERS });
+    return NextResponse.json({ ...validated, npcName: npc.name }, { headers: CORS_HEADERS });
   } catch (err) {
     const latencyMs = Date.now() - t0;
     const errMsg = err instanceof Error ? err.message : String(err);
