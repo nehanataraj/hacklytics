@@ -280,11 +280,14 @@ export default function NpcList({ npcs }: { npcs: NPC[] }) {
       {/* Hero: Description (left) + Video player (right, larger) */}
       <section className="grid grid-cols-1 md:grid-cols-[1fr_1.5fr] gap-6 md:gap-8 mb-10">
         <div className="min-h-[200px] md:min-h-[280px] p-6 flex flex-col justify-center">
-          <p className="text-gray-400 text-sm leading-relaxed">
-            NPC Studio helps you design game characters in one place—backstory, goals, and voice—then connects them to Unity. Create characters, get a unique ID, and paste it into your game so they come to life with consistent, in-character dialogue.
+          <p className="text-white text-lg font-semibold leading-snug">
+            Using AI to make characters more human.
           </p>
-          <p className="text-gray-400 text-sm leading-relaxed mt-3">
-            You define who each character is, what they want, and what they are allowed to do. The app generates dialogue that stays in character and supports gestures and actions in your game. Once you save a character, paste their ID into your Unity project and they are ready to use. Great for indie games, prototypes, and any project where you want smart, personality-driven NPCs without the heavy lifting.
+          <p className="text-gray-400 text-sm leading-relaxed mt-4">
+            Tiny studios often lag behind large ones in resources, but never in vision. Playable.exe brings a level of realism to every character that makes it feel like a person. Context-aware, reactive, and unforgettable. Every character counts.
+          </p>
+          <p className="text-gray-400 text-sm leading-relaxed mt-4">
+            Download scripts below and insert into your program to get started.
           </p>
         </div>
         <div className="min-h-[200px] md:min-h-[280px] aspect-video bg-black border border-gray-800 flex items-center justify-center">
