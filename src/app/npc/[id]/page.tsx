@@ -2,6 +2,8 @@ import { notFound } from 'next/navigation';
 import { getNPC } from '@/lib/storage';
 import NpcEditor from '@/components/NpcEditor';
 
+export const dynamic = 'force-dynamic';
+
 export default async function NpcPage({
   params,
 }: {

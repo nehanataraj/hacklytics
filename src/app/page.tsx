@@ -2,6 +2,8 @@ import { listNPCs } from "@/lib/storage";
 import NpcList from "@/components/NpcList";
 import type { NPC } from "@/lib/schema";
 
+export const dynamic = 'force-dynamic';
+
 export default async function HomePage() {
   let npcs: NPC[] = [];
   try {

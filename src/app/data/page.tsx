@@ -11,6 +11,8 @@ import {
 } from "./DataCharts";
 import { AnimatedCounter } from "./AnimatedCounter";
 
+export const dynamic = 'force-dynamic';
+
 export const metadata = {
   title: "Playable.exe — Data",
   description: "Analytics and metrics from your NPC roster",
