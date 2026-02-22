@@ -37,6 +37,8 @@ const Vec3Schema = z.object({
 const ChatReqSchema = z.object({
   npcId: z.string().min(1),
   playerText: z.string().min(1),
+  mode: z.enum(["chat", "ambient"]).optional().default("chat"),
+  lastDialogue: z.string().optional(),
   world: z
     .object({
       playerPos: Vec3Schema.optional(),
@@ -88,6 +90,8 @@ function buildPrompt(
   npc: NPC,
   playerText: string,
   world?: ChatReq["world"],
+  mode: "chat" | "ambient" = "chat",
+  lastDialogue?: string,
 ): string {
   const persona = npc.persona ?? { backstory: "", goals: "", voice_style: "" };
   const rules = npc.rules ?? { do_not: [], spoiler_policy: "" };
@@ -119,16 +123,34 @@ function buildPrompt(
     "## Capabilities",
     `Allowed gestures: ${caps.allowed_gestures.join(", ")}`,
     `Allowed actions: ${caps.allowed_actions.join(", ")}`,
-    "",
-    "## Situation",
-    `Player says: "${playerText}"`,
-    world?.playerPos
-      ? `Player position: (${world.playerPos.x ?? 0}, ${world.playerPos.y ?? 0}, ${world.playerPos.z ?? 0})`
-      : "",
-    world?.npcPos
-      ? `Your position: (${world.npcPos.x ?? 0}, ${world.npcPos.y ?? 0}, ${world.npcPos.z ?? 0})`
-      : "",
   ];
+
+  if (mode === "ambient") {
+    lines.push(
+      "",
+      "## Task",
+      "You are thinking aloud, muttering to yourself, or reacting to your surroundings.",
+      "Generate a short, in-character line of ambient dialogue (1–2 sentences max).",
+      "Be creative — comment on the weather, your goals, a memory, something you see, or a passing thought.",
+      "Use a different gesture and mood than last time.",
+      lastDialogue
+        ? `Your previous line was: "${lastDialogue}" — say something COMPLETELY different this time.`
+        : "This is your first line — introduce yourself or react to your environment.",
+    );
+  } else {
+    lines.push(
+      "",
+      "## Situation",
+      `Player says: "${playerText}"`,
+    );
+  }
+
+  if (world?.playerPos) {
+    lines.push(`Player position: (${world.playerPos.x ?? 0}, ${world.playerPos.y ?? 0}, ${world.playerPos.z ?? 0})`);
+  }
+  if (world?.npcPos) {
+    lines.push(`Your position: (${world.npcPos.x ?? 0}, ${world.npcPos.y ?? 0}, ${world.npcPos.z ?? 0})`);
+  }
 
   return lines.filter((l) => l !== "").join("\n");
 }
@@ -189,7 +211,7 @@ export async function POST(req: Request) {
       { status: 400, headers: CORS_HEADERS },
     );
   }
-  const { npcId, playerText, world } = parsed.data;
+  const { npcId, playerText, mode, lastDialogue, world } = parsed.data;
 
   // 2. Load NPC from file storage
   const npc = await getNPC(npcId);
@@ -201,14 +223,13 @@ export async function POST(req: Request) {
   const lf = makeLangfuse();
   const trace = lf?.trace({
     name: "npc.chat",
-    // Only log non-secret, game-level identifiers
-    input: { npcId, playerText, npcName: npc.name, npcRole: npc.role },
+    input: { npcId, playerText, mode, npcName: npc.name, npcRole: npc.role },
   });
 
   // 4. Build dynamic schema and prompt
   const allowedGestures = npc.capabilities?.allowed_gestures ?? ["none"];
   const BrainResponseSchema = buildBrainSchema(allowedGestures as string[]);
-  const prompt = buildPrompt(npc, playerText, world);
+  const prompt = buildPrompt(npc, playerText, world, mode, lastDialogue);
 
   // 5. If no Gemini API key, return stub
   const apiKey = process.env.GEMINI_API_KEY;
