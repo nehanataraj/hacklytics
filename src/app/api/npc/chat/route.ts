@@ -152,7 +152,7 @@ function makeLangfuse(): Langfuse | null {
 // ── Stub fallback (no API key or Gemini error) ─────────────────────────────
 function buildStub(npc: NPC, _playerText: string): BrainResponse {
   const gestures = npc.capabilities?.allowed_gestures ?? ["none"];
-  const moods = ["neutral", "happy", "focused", "sad", "excited"] as const;
+  const moods = ["neutral", "happy", "focused", "sad", "angry"] as const;
   const randomGesture = gestures[Math.floor(Math.random() * gestures.length)] ?? "none";
   const randomMood = moods[Math.floor(Math.random() * moods.length)];
 
