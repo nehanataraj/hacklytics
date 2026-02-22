@@ -10,7 +10,11 @@ export default async function NpcPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const npc = await getNPC(id);
+  let npc = await getNPC(id);
+  if (!npc) {
+    await new Promise((r) => setTimeout(r, 1500));
+    npc = await getNPC(id);
+  }
   if (!npc) notFound();
   return <NpcEditor npc={npc} />;
 }

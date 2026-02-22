@@ -31,7 +31,7 @@ export default function NewNpcPage() {
         }
         return;
       }
-      window.location.href = `/npc/${body.id}`;
+      window.location.href = '/';
     } catch {
       showToast('Network error — NPC not created.', 'error');
     } finally {
