@@ -1,4 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
+import { unstable_noStore as noStore } from 'next/cache';
 import { NPCSchema } from './schema';
 import type { NPC, NPCCreate, NPCUpdate } from './schema';
 
@@ -61,6 +62,7 @@ function fileWriteAll(npcs: NPC[]): void {
 // ── Unified read/write ─────────────────────────────────────────────────────
 
 async function readAll(): Promise<NPC[]> {
+  noStore();
   return useBlob ? blobReadAll() : fileReadAll();
 }
 

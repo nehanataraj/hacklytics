@@ -31,7 +31,7 @@ export default function NewNpcPage() {
         }
         return;
       }
-      router.push(`/npc/${body.id}`);
+      window.location.href = `/npc/${body.id}`;
     } catch {
       showToast('Network error — NPC not created.', 'error');
     } finally {
