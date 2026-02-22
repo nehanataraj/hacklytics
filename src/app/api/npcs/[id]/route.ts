@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
-import { getNPC, updateNPC, deleteNPC } from '@/lib/storage';
+import { getNPC, updateNPC, deleteNPC, listNPCs } from '@/lib/storage';
 import { NPCUpdateSchema } from '@/lib/schema';
+import { syncNpcsToDatabricks } from '@/lib/databricks';
 import type { ZodError } from 'zod';
 
 function flattenZodError(err: ZodError): Record<string, string> {
@@ -37,6 +38,8 @@ export async function PUT(
   }
   const npc = await updateNPC(id, parsed.data);
   if (!npc) return NextResponse.json({ error: 'Not found' }, { status: 404 });
+  const npcs = await listNPCs();
+  await syncNpcsToDatabricks(npcs);
   return NextResponse.json(npc);
 }
 
@@ -47,5 +50,7 @@ export async function DELETE(
   const { id } = await params;
   const deleted = await deleteNPC(id);
   if (!deleted) return NextResponse.json({ error: 'Not found' }, { status: 404 });
+  const npcs = await listNPCs();
+  await syncNpcsToDatabricks(npcs);
   return NextResponse.json({ success: true });
 }

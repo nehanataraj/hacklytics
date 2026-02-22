@@ -277,6 +277,20 @@ export default function NpcList({ npcs }: { npcs: NPC[] }) {
 
   return (
     <>
+      {/* Title: playable.exe + tagline */}
+      <section className="flex flex-col items-center justify-center py-12 md:py-16 mb-10">
+        <div className="flex items-center gap-3">
+          <span className="text-white text-4xl md:text-5xl drop-shadow-[0_0_12px_rgba(255,255,255,0.5)]" aria-hidden>⚔</span>
+          <h2 className="flex items-baseline font-mono text-3xl md:text-4xl tracking-tight">
+            <span className="text-amber-400/95 border-b border-amber-400/40 pb-0.5 drop-shadow-[0_0_8px_rgba(251,191,36,0.3)]">playable</span>
+            <span className="text-gray-500 ml-0.5">.exe</span>
+          </h2>
+        </div>
+        <p className="text-gray-500 text-sm mt-3 font-mono tracking-wide">
+          NPC · MEMORY · EMOTION · LOOP
+        </p>
+      </section>
+
       {/* Hero: Description (left) + Video player (right, larger) */}
       <section className="grid grid-cols-1 md:grid-cols-[1fr_1.5fr] gap-6 md:gap-8 mb-10">
         <div className="min-h-[200px] md:min-h-[280px] p-6 flex flex-col justify-center">
