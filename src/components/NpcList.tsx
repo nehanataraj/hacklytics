@@ -45,7 +45,6 @@ function UnitySetupPanel() {
         className="w-full flex items-center justify-between px-5 py-4 bg-black hover:bg-gray-900 transition-colors text-left"
       >
         <div className="flex items-center gap-2.5">
-          <span className="text-white text-base">🎮</span>
           <span className="text-sm font-semibold text-gray-300">Unity Quick Setup</span>
           <span className="text-xs text-gray-500 font-normal">— install scripts into any Unity project</span>
         </div>
@@ -290,8 +289,15 @@ export default function NpcList({ npcs }: { npcs: NPC[] }) {
             Download scripts below and insert into your program to get started.
           </p>
         </div>
-        <div className="min-h-[200px] md:min-h-[280px] aspect-video bg-black border border-gray-800 flex items-center justify-center">
-          <p className="text-gray-500 text-sm">Video demonstration</p>
+        <div className="min-h-[200px] md:min-h-[280px] aspect-video bg-black border border-gray-800 overflow-hidden">
+          <video
+            className="w-full h-full object-cover"
+            src="/video-insert.mp4"
+            autoPlay
+            loop
+            muted
+            playsInline
+          />
         </div>
       </section>
 
