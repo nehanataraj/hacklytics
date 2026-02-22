@@ -73,7 +73,7 @@ function toCsv(npcs: NPC[]): string {
     const p = n.persona ?? { backstory: '', goals: '', voice_style: '' };
     const r = n.rules ?? { do_not: [], spoiler_policy: '' };
     const c = n.capabilities ?? { allowed_gestures: [], allowed_actions: [] };
-    return [
+    const cells = [
       n.id,
       n.name,
       n.role,
@@ -88,7 +88,7 @@ function toCsv(npcs: NPC[]): string {
       n.createdAt ?? '',
       n.updatedAt ?? '',
     ].map(escapeCsvCell);
-    return rows.join(',');
+    return cells.join(',');
   });
   return [headers.join(','), ...rows].join('\n');
 }
