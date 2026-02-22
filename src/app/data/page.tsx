@@ -1,5 +1,5 @@
 import { listNPCs } from "@/lib/storage";
-import { executeSqlStatement, isDatabricksConfigured } from "@/lib/databricks";
+import { isDatabricksConfigured, syncNpcsToDatabricks } from "@/lib/databricks";
 import type { NPC } from "@/lib/schema";
 import Link from "next/link";
 import {
@@ -79,65 +79,6 @@ function computeMetrics(npcs: NPC[]) {
   };
 }
 
-function computeMetricsFromFlatRows(flatRows: Record<string, unknown>[]): ReturnType<typeof computeMetrics> {
-  const roleCounts = new Map<string, number>();
-  let totalLore = 0;
-  let totalBackstory = 0;
-  let totalGoals = 0;
-  let withSpoilerPolicy = 0;
-  const rows: NpcRow[] = [];
-
-  for (const r of flatRows) {
-    const role = String(r.role ?? "Unknown");
-    roleCounts.set(role, (roleCounts.get(role) ?? 0) + 1);
-
-    const backstory = String(r.backstory ?? "");
-    const goals = String(r.goals ?? "");
-    const loreCount = Number(r.lore_facts_count ?? 0);
-    const doNotStr = String(r.do_not ?? "");
-    const doNotCount = doNotStr.trim() ? doNotStr.split(";").length : 0;
-    const gesturesStr = String(r.allowed_gestures ?? "");
-    const actionsStr = String(r.allowed_actions ?? "");
-    const gestureCount = gesturesStr.trim() ? gesturesStr.split(";").length : 0;
-    const actionCount = actionsStr.trim() ? actionsStr.split(";").length : 0;
-    const hasSpoiler = Boolean((r.spoiler_policy ?? "").toString().trim());
-
-    totalLore += loreCount;
-    totalBackstory += backstory.length;
-    totalGoals += goals.length;
-    if (hasSpoiler) withSpoilerPolicy += 1;
-
-    rows.push({
-      name: String(r.name ?? ""),
-      role,
-      backstoryLen: backstory.length,
-      goalsLen: goals.length,
-      loreCount,
-      doNotCount,
-      gestureCount,
-      actionCount,
-    });
-  }
-
-  const roleList: RoleCount[] = Array.from(roleCounts.entries())
-    .map(([role, count]) => ({ role, count }))
-    .sort((a, b) => b.count - a.count);
-
-  return {
-    totalNpcs: flatRows.length,
-    totalLore,
-    avgLorePerNpc: flatRows.length ? totalLore / flatRows.length : 0,
-    avgBackstoryLen: flatRows.length ? totalBackstory / flatRows.length : 0,
-    avgGoalsLen: flatRows.length ? totalGoals / flatRows.length : 0,
-    withSpoilerPolicy,
-    roleList,
-    rows: rows.sort((a, b) => a.role.localeCompare(b.role) || a.name.localeCompare(b.name)),
-  };
-}
-
-function isSyncedTableShape(row: Record<string, unknown>): boolean {
-  return "role" in row && "name" in row && ("lore_facts_count" in row || "backstory" in row);
-}
 
 export default async function DataPage() {
   let npcs: NPC[] = [];
@@ -147,20 +88,16 @@ export default async function DataPage() {
     console.error("Failed to load NPCs for data page:", e);
   }
 
-  const databricksQuery = process.env.DATABRICKS_NPC_QUERY?.trim();
-  let databricksRows: Record<string, unknown>[] | null = null;
-  if (databricksQuery && isDatabricksConfigured()) {
-    databricksRows = await executeSqlStatement(databricksQuery);
+  const databricksConfigured = isDatabricksConfigured();
+  let databricksSynced = false;
+  if (databricksConfigured && npcs.length > 0) {
+    syncNpcsToDatabricks(npcs).then((ok) => {
+      if (ok) console.log("[data] Re-synced NPCs to Databricks");
+    }).catch((e) => console.error("[data] Databricks sync error:", e));
+    databricksSynced = true;
   }
 
-  const useDatabricks =
-    databricksRows &&
-    databricksRows.length > 0 &&
-    isSyncedTableShape(databricksRows[0]);
-
-  const m = useDatabricks
-    ? computeMetricsFromFlatRows(databricksRows!)
-    : computeMetrics(npcs);
+  const m = computeMetrics(npcs);
 
   return (
     <div className="space-y-8">
@@ -169,7 +106,7 @@ export default async function DataPage() {
         <div>
           <h1 className="text-2xl font-bold text-white tracking-tight">Analytics</h1>
           <p className="text-gray-400 mt-1 text-sm">
-            Character roster metrics {useDatabricks ? "from Databricks" : "from local storage"}.
+            Character roster metrics{databricksSynced ? ", synced to Databricks" : ""}.
           </p>
         </div>
         <div className="flex items-center gap-4">
@@ -189,11 +126,11 @@ export default async function DataPage() {
       </div>
 
       {/* Databricks status */}
-      {useDatabricks && (
+      {databricksSynced && (
         <div className="px-1 py-3 flex items-center gap-3">
           <div className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
           <p className="text-amber-200/90 text-sm">
-            Live from Databricks &mdash; {m.totalNpcs} character{m.totalNpcs !== 1 ? "s" : ""} synced
+            Synced to Databricks &mdash; {m.totalNpcs} character{m.totalNpcs !== 1 ? "s" : ""} mirrored
           </p>
         </div>
       )}
