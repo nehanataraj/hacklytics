@@ -15,9 +15,12 @@ export default function RootLayout({
     <html lang="en">
       <body className="min-h-screen bg-black text-white antialiased selection:bg-white/30">
         <nav className="border-b border-gray-800 bg-black/90 backdrop-blur-md sticky top-0 z-10 shadow-lg shadow-black/20">
-          <div className="max-w-5xl mx-auto px-4 h-16 flex items-center gap-3">
+          <div className="max-w-5xl mx-auto px-4 h-16 flex items-center justify-between gap-3">
             <a href="/" className="flex items-center hover:opacity-90 transition-opacity">
               <img src="/logo.png" alt="Playable.exe" className="h-12" />
+            </a>
+            <a href="/data" className="text-sm text-gray-400 hover:text-white transition-colors">
+              Data
             </a>
           </div>
         </nav>

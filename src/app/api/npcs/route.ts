@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { listNPCs, createNPC } from '@/lib/storage';
 import { NPCCreateSchema } from '@/lib/schema';
+import { syncNpcsToDatabricks } from '@/lib/databricks';
 import type { ZodError } from 'zod';
 
 /** Converts Zod issues to a flat `{ 'persona.voice_style': 'Too short' }` map. */
@@ -35,6 +36,8 @@ export async function POST(request: Request) {
       );
     }
     const npc = await createNPC(parsed.data);
+    const npcs = await listNPCs();
+    syncNpcsToDatabricks(npcs).catch((e) => console.error('[POST /api/npcs] Databricks sync error:', e));
     return NextResponse.json(npc, { status: 201 });
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
