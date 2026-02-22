@@ -45,7 +45,7 @@ export async function GET(request: Request) {
   });
 }
 
-function escapeCsvCell(value: string): string {
+function escapeCsvCell(value: string | number): string {
   const s = String(value ?? '');
   if (s.includes(',') || s.includes('"') || s.includes('\n') || s.includes('\r')) {
     return '"' + s.replace(/"/g, '""') + '"';
